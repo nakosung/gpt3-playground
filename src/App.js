@@ -113,14 +113,34 @@ function Settings({locale}) {
   </>)
 }
 
-async function translate_to_local(local_text,locale) {  
-  const {data} = await axios.post(URL_TRANSLATOR,[local_text,locale])
-  return data
+async function preserve_whitespaces(x, fn) {
+  const head = x.match(/^[ \t\n]+/)
+  const tail = x.match(/[ \t\n]+$/)
+
+  x = await fn(x)
+
+  if (head) {
+    x = head[0] + x
+  }
+  if (tail) {
+    x = x + tail
+  }
+
+  return x
+}
+
+async function translate_to_local(local_text,locale) {
+  return await preserve_whitespaces(local_text,async () => {
+    const {data} = await axios.post(URL_TRANSLATOR,[local_text,locale])
+    return data
+  })
 }
 
 async function translate_from_local(local_text,locale) {
-  const {data} = await axios.post(URL_TRANSLATOR,[local_text,"en"])
-  return data
+  return await preserve_whitespaces(local_text,async () => {
+    const {data} = await axios.post(URL_TRANSLATOR,[local_text,"en"])
+    return data
+  })
 }
 
 function Fragment({adventureId, fragId, text, editing, setEditing, locale}) {
