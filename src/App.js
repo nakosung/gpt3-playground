@@ -62,7 +62,7 @@ const SETTINGS = gql`
 `
 
 function Settings({locale}) {
-  const [temperature, setTemperature] = useState(0.2)
+  const [temperature, setTemperature] = useState('0.2')
   const [useThree, setUseThree] = useState(true)
 
   const [changeSettings, {loading}] = useMutation(SETTINGS)
@@ -72,7 +72,7 @@ function Settings({locale}) {
         modelType: useThree ? 'dragon' : 'griffin',
         directDialog: true,
         safeMode: false,
-        temperature: temperature
+        temperature: parseFloat(temperature)
     }
     changeSettings({
       variables:{input}
@@ -100,7 +100,7 @@ function Settings({locale}) {
       {useGpt3Msg} <input type="checkbox" defaultChecked={useThree} onChange={e=>setUseThree(e.checked)} />
     </td>
     <td>
-      Temperature <input value={temperature} onChange={setTemperature}/>
+      Temperature <input value={temperature} onChange={e => setTemperature(e.target.value)}/>
     </td>
     <td>
     <button className="btn" onClick={handleClick} disabled={loading}>
