@@ -192,7 +192,7 @@ function Content({adventureId,editing,setEditing,locale}) {
     return <p/>
   }
 
-  const actions = data.content?.actions;
+  const actions = data?.content?.actions;
   if (!actions) return <p>Empty</p>
 
   return (
