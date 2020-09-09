@@ -13,6 +13,54 @@
   }
 }
 
+.Prompt {
+  width: 90%;
+  height: 10rem;
+}
+
+.hovered {
+  color:yellow;
+  cursor: pointer;
+}
+
+.editing {
+  color: red;
+}
+
+.settings {
+  font-size: 1rem;
+}
+
+.authToken {
+  width:100%;
+  padding: 0.175rem 0.45rem;
+  background:gray;
+}
+
+.help {
+  font-size:0.2rem;
+}
+
+.locale {
+  font-size:0.9rem;
+}
+
+.btn {
+  color: white;
+  background: teal;
+  padding: 0.275rem 0.75rem;
+  border: 1px solid teal;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.btn:disabled {
+  color:gray;
+  background: darkslategrey;  
+}
+
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
