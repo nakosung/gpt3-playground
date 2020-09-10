@@ -61,12 +61,50 @@ const SETTINGS = gql`
   }
 `
 
+const READ_CONFIG = gql`
+{
+  user {
+    id
+    hasPremium
+    gameSettings {
+      id
+      ...GameSettingsFragment
+      __typename
+    }
+    __typename
+  }
+}
+
+fragment GameSettingsFragment on GameSettings {
+  temperature
+  bannedWords
+  modelType
+  showCommands
+  showModes
+  defaultMode
+  showTips
+  textLength
+  directDialog
+  __typename
+}
+`
+
 function Settings({locale}) {
+  const { loading_, data } = useQuery(READ_CONFIG);
   const [temperature, setTemperature] = useState('0.2')
   const [useThree, setUseThree] = useState(true)
+  const [changeSettings, {loading}] = useMutation(SETTINGS,
+    {
+      refetchQueries: [{ query: READ_CONFIG }] 
+    })
 
-  const [changeSettings, {loading}] = useMutation(SETTINGS)
-
+  const gameSettings = data?.user?.gameSettings || {temperature:0, modelType:'dragon'};
+  
+  useEffect(() => {
+    setTemperature(gameSettings.temperature);
+    setUseThree(gameSettings.modelType === 'dragon')
+  }, [gameSettings])
+  
   const handleClick = () => {
     const input = {
         modelType: useThree ? 'dragon' : 'griffin',
@@ -97,13 +135,13 @@ function Settings({locale}) {
     <tbody>
   <tr className="settings">
     <td>
-      {useGpt3Msg} <input type="checkbox" defaultChecked={useThree} onChange={e=>setUseThree(e.checked)} />
+      {useGpt3Msg} <input type="checkbox" defaultChecked={useThree} onChange={e=>setUseThree(e.target.checked)} disabled={loading || loading_}/>
     </td>
     <td>
-      Temperature <input value={temperature} onChange={e => setTemperature(e.target.value)}/>
+      Temperature <input value={temperature} onChange={e => setTemperature(e.target.value)} disabled={loading || loading_}/>
     </td>
     <td>
-    <button className="btn" onClick={handleClick} disabled={loading}>
+    <button className="btn" onClick={handleClick} disabled={loading || loading_}>
       {applyMsg}
     </button>
     </td>
@@ -192,7 +230,7 @@ function Content({adventureId,editing,setEditing,locale}) {
     return <p/>
   }
 
-  const actions = data.content?.actions;
+  const actions = data?.content?.actions;
   if (!actions) return <p>Empty</p>
 
   return (
@@ -382,7 +420,7 @@ function App() {
   
   const [authToken, setAuthToken] = useState(window.localStorage.getItem('authToken') || AUTH_TOKEN);
   const [client, setClient] = useState(null);
-
+  
   useEffect(() => {
     const link = new WebSocketLink({
       uri: GRAPHQL_ENDPOINT,
