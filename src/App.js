@@ -152,28 +152,30 @@ function Settings({locale}) {
 }
 
 async function preserve_whitespaces(x, fn) {
-  const PLACEHOLDER = '!@#!@#'
-  const r = /[\t \n]+/g
-  const m = x.match(r)
-  x = x.replaceAll(r,PLACEHOLDER)
-  
+  const head = x.match(/^[ \t\n]+/)
+  const tail = x.match(/[ \t\n]+$/)
+
   x = await fn(x)
 
-  let i=0
-  x = x.replaceAll(PLACEHOLDER,(a,b,c) => m[i++])
-  
+  if (head) {
+    x = head[0] + x
+  }
+  if (tail) {
+    x = x + tail
+  }
+
   return x
 }
 
 async function translate_to_local(local_text,locale) {
-  return await preserve_whitespaces(local_text,async () => {
+  return await preserve_whitespaces(local_text,async (local_text) => {
     const {data} = await axios.post(URL_TRANSLATOR,[local_text,locale])
     return data
   })
 }
 
 async function translate_from_local(local_text,locale) {
-  return await preserve_whitespaces(local_text,async () => {
+  return await preserve_whitespaces(local_text,async (local_text) => {
     const {data} = await axios.post(URL_TRANSLATOR,[local_text,"en"])
     return data
   })
@@ -215,7 +217,7 @@ function Fragment({adventureId, fragId, text, editing, setEditing, locale}) {
       onMouseOver={(e) => {setHover(true)}}
       onMouseOut={(e) => {setHover(false)}}
       onClick={(e) => setEditing(me)}
-      >{translated.split('\n').map((t,i) => (<span key={i}>{i ? (<><br/>{wrap(t)}</>) : (<>{wrap(t)}</>)}</span>))}</span>
+      >{translated.split('\n').map((t,i) => (<span key={i} className="content">{i ? (<><br/>{wrap(t)}</>) : (<>{wrap(t)}</>)}</span>))}</span>
     </>    
   )
 }
