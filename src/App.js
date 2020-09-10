@@ -152,18 +152,16 @@ function Settings({locale}) {
 }
 
 async function preserve_whitespaces(x, fn) {
-  const head = x.match(/^[ \t\n]+/)
-  const tail = x.match(/[ \t\n]+$/)
-
+  const PLACEHOLDER = '!@#!@#'
+  const r = /[\t \n]+/g
+  const m = x.match(r)
+  x = x.replaceAll(r,PLACEHOLDER)
+  
   x = await fn(x)
 
-  if (head) {
-    x = head[0] + x
-  }
-  if (tail) {
-    x = x + tail
-  }
-
+  let i=0
+  x = x.replaceAll(PLACEHOLDER,(a,b,c) => m[i++])
+  
   return x
 }
 
@@ -208,6 +206,8 @@ function Fragment({adventureId, fragId, text, editing, setEditing, locale}) {
 
   const me = {text, handleClick, fragId}
 
+  const wrap = (x) => `\u200b${x}\u200b`
+
   return (
     <>
     <span
@@ -215,7 +215,7 @@ function Fragment({adventureId, fragId, text, editing, setEditing, locale}) {
       onMouseOver={(e) => {setHover(true)}}
       onMouseOut={(e) => {setHover(false)}}
       onClick={(e) => setEditing(me)}
-      >{translated.split('\n').map((t,i) => (<span key={i}>{i ? (<><br/>{t}</>) : (<>{t}</>)}</span>))}</span>
+      >{translated.split('\n').map((t,i) => (<span key={i}>{i ? (<><br/>{wrap(t)}</>) : (<>{wrap(t)}</>)}</span>))}</span>
     </>    
   )
 }
