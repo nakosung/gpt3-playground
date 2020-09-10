@@ -24,8 +24,7 @@
 }
 
 .content {
-  white-space: nowrap; 
-  font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New;
+  font-size:1.5rem;
 }
 
 .editing {

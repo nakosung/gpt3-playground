@@ -168,6 +168,8 @@ async function preserve_whitespaces(x, fn) {
 }
 
 async function translate_to_local(local_text,locale) {
+  if (locale == 'raw') return local_text
+
   return await preserve_whitespaces(local_text,async (local_text) => {
     const {data} = await axios.post(URL_TRANSLATOR,[local_text,locale])
     return data
@@ -175,6 +177,8 @@ async function translate_to_local(local_text,locale) {
 }
 
 async function translate_from_local(local_text,locale) {
+  if (locale == 'raw') return local_text
+
   return await preserve_whitespaces(local_text,async (local_text) => {
     const {data} = await axios.post(URL_TRANSLATOR,[local_text,"en"])
     return data
@@ -402,7 +406,7 @@ Temperature는 생성할 때 얼마나 자유롭게 선택하도록 할 것인�
     <>
     <h3>CLOVA GPT-3 Playground</h3>    
     <span className="locale">
-    {['en','ko','ja','ru'].map(loc => (<span key={loc}><input type="radio" checked={locale === loc} onChange={() => 1} onClick={() => setLocale(loc)} value={loc}/>{loc}</span>))}
+    {['raw','en','ko','ja','ru'].map(loc => (<span key={loc}><input type="radio" checked={locale === loc} onChange={() => 1} onClick={() => setLocale(loc)} value={loc}/>{loc}</span>))}
     </span>
     <Settings locale={locale}/>
     
